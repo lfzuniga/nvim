@@ -1,5 +1,13 @@
 local VIVID = 0.25
 local BLUE_SEPARATION = 0.45
+local TEXT_POP = 0.25
+
+-- TEXT_POP
+-- 0.00 = original Nordic text
+-- 0.05 = tiny improvement
+-- 0.10 = good default
+-- 0.15 = brighter
+-- 0.25 = probably too white
 
 -- VIVID:
 -- 0.00 = original Nordic
@@ -60,6 +68,10 @@ local function mix(hex1, hex2, amount)
 	)
 end
 
+local function brighten_text(hex)
+	return mix(hex, "#FFFFFF", TEXT_POP)
+end
+
 local function vivid_family(color)
 	color.base = vivid(color.base, VIVID)
 	color.bright = vivid(color.bright, VIVID)
@@ -103,6 +115,15 @@ return {
 					-- Pull light blue away from cyan.
 					-- blue2 is the one that can feel too cyan-ish.
 					palette.blue2 = mix(palette.blue2, palette.blue0, BLUE_SEPARATION)
+
+                    -- Make normal/plain text slightly easier to read.
+                    palette.white0 = brighten_text(palette.white0)
+                    palette.white1 = brighten_text(palette.white1)
+
+                    -- Some Nordic groups use fg directly, so cover it too if it exists.
+                    if palette.fg then
+                        palette.fg = brighten_text(palette.fg)
+                    end
 				end,
 
 				-- on_highlight = function(highlights, _palette)
