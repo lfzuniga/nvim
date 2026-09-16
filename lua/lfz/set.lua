@@ -30,3 +30,6 @@ vim.opt.updatetime = 50
 
 vim.opt.colorcolumn = "80"
 
+if vim.env.ACT_HOME then
+  vim.opt_global.path:append(vim.env.ACT_HOME .. "/include")
+end

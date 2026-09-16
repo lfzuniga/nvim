@@ -21,6 +21,31 @@ return {
       local cmp = require("cmp")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+      local clangd_cmd = {
+          "clangd",
+          "--background-index",
+        }
+
+      if vim.env.ACTFLOW_HOME then
+        local actflow_index = vim.env.ACTFLOW_HOME .. "/actflow.idx"
+
+        if vim.fn.filereadable(actflow_index) == 1 then
+          table.insert(
+            clangd_cmd,
+            "--index-file=" .. actflow_index
+          )
+        end
+      end
+
+      local clangd_fallback_flags = {}
+
+      if vim.env.ACT_HOME then
+        table.insert(
+          clangd_fallback_flags,
+          "-I" .. vim.env.ACT_HOME .. "/include"
+        )
+      end
+
       require("fidget").setup({})
       require("mason").setup()
 
@@ -48,7 +73,13 @@ return {
         },
       })
 
-      vim.lsp.config("clangd", { capabilities = capabilities })
+      vim.lsp.config("clangd", {
+          capabilities = capabilities,
+          cmd = clangd_cmd,
+          init_options = {
+            fallbackFlags = clangd_fallback_flags,
+          },
+        })
       vim.lsp.config("pyright", { capabilities = capabilities })
       vim.lsp.config("bashls", { capabilities = capabilities })
 
